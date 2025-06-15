@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Server-Sent Events Client</title>
+</head>
+<body>
+    <h1>Server-Sent Events Demo</h1>
+    <div id="events"></div>
+
+    <script>
+        // 创建 EventSource 实例，连接到 SSE 服务器端点
+        const eventSource = new EventSource('http://localhost:8080/events');
+
+        eventSource.onopen = function(event) {
+            console.log('SSE connection established.');
+            document.getElementById('events').innerHTML += '<p>Connected to SSE server.</p>';
+        };
+
+        // 监听 'message' 事件 (默认事件类型)
+        eventSource.onmessage = function(event) {
+            const data = event.data;
+            console.log('Received message:', data);
+            document.getElementById('events').innerHTML += '<p>Message: ' + data + '</p>';
+        };
+
+        // 监听自定义事件 (如果服务器发送了带 'event:' 字段的数据)
+        eventSource.addEventListener('customEvent', function(event) {
+            const data = event.data;
+            console.log('Received custom event:', data);
+            document.getElementById('events').innerHTML += '<p>Custom Event: ' + data + '</p>';
+        });
+
+        eventSource.onerror = function(error) {
+            console.error('SSE error:', error);
+            document.getElementById('events').innerHTML += '<p style="color:red;">Error: ' + error.message + '</p>';
+            eventSource.close(); // 发生严重错误时关闭连接
+        };
+    </script>
+</body>
+</html>
