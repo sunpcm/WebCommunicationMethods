@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Long Polling Client</title>
+</head>
+<body>
+    <h1>Long Polling Demo</h1>
+    <div id="data">Waiting for updates...</div>
+
+    <script>
+        function longPoll() {
+            console.log('Sending long polling request...');
+            fetch('http://localhost:8080/longpoll') // 假设服务器提供 /longpoll 接口
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Received updated data:', data);
+                    document.getElementById('data').innerHTML = 'Latest Update: ' + JSON.stringify(data);
+                    // 收到数据后立即再次发起长轮询
+                    longPoll();
+                })
+                .catch(error => {
+                    console.error('Long polling error:', error);
+                    document.getElementById('data').innerHTML = '<span style="color:red;">Error: ' + error.message + '</span>';
+                    // 错误发生后等待一段时间再重试，避免请求风暴
+                    setTimeout(longPoll, 5000);
+                });
+        }
+
+        // 页面加载后立即开始长轮询
+        longPoll();
+
+        // 模拟客户端向服务器发送更新，以触发长轮询响应
+        function simulateServerUpdate() {
+            const newValue = Math.floor(Math.random() * 100);
+            fetch('http://localhost:8080/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ newValue: newValue })
+            })
+            .then(response => response.text())
+            .then(message => console.log('Simulated update response:', message))
+            .catch(error => console.error('Error simulating update:', error));
+        }
+
+        // 可以通过点击按钮模拟服务器端数据更新
+        // document.body.innerHTML += '<br><button onclick="simulateServerUpdate()">Simulate Server Data Update</button>';
+        // 也可以定时模拟
+        // setInterval(simulateServerUpdate, 10000); // 每10秒模拟一次客户端触发的服务器更新
+    </script>
+</body>
+</html>
