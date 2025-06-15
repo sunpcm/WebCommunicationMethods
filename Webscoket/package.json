@@ -1,0 +1,19 @@
+{
+  "name": "websocket-demo",
+  "version": "1.0.0",
+  "description": "示例项目，演示 WebSocket 通信方法",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
+

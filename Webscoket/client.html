@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h1>WebSocket Demo</h1>
+    <input type="text" id="messageInput" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
+    <div id="messages"></div>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:8080'); // 连接到 WebSocket 服务器
+
+        socket.onopen = function(event) {
+            console.log('WebSocket connection established.');
+            document.getElementById('messages').innerHTML += '<p>Connected to server.</p>';
+        };
+
+        socket.onmessage = function(event) {
+            // 接收到来自服务器的消息
+            const message = event.data;
+            console.log('Message from server:', message);
+            document.getElementById('messages').innerHTML += '<p>Server: ' + message + '</p>';
+        };
+
+        socket.onclose = function(event) {
+            console.log('WebSocket connection closed.');
+            document.getElementById('messages').innerHTML += '<p>Disconnected from server.</p>';
+        };
+
+        socket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+            document.getElementById('messages').innerHTML += '<p style="color:red;">Error: ' + error.message + '</p>';
+        };
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            if (message) {
+                socket.send(message); // 发送消息到服务器
+                document.getElementById('messages').innerHTML += '<p>You: ' + message + '</p>';
+                messageInput.value = ''; // 清空输入框
+            }
+        }
+    </script>
+</body>
+</html>
